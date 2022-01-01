@@ -12,19 +12,19 @@ Moreover if your are one of the guy who cares for beautiful, pleasant and elegan
 
 # Initial Enumeration
 `thawang.live/` this was out target. On visiting the page we are presented with the static web page.
-![[/images/initial.png]]
+![](images/initial.png)
 
 So, this is a static page which is hosted on amazon s3. My initial guess was that we might have to compromise the cloud infracstructure. So, i spent my 2-3 hours just trying to figure out if we can do anything with s3 bucket. I used the `aws cli` tool to check if we can access the bucket. However, the bucket was private and my enumeration was useless.
 
 I checked  the source code of the site to see if we can get anything.
 
-![[/images/initial2.png]]
+![](images/initial2.png)
 
 I don't know if i didn't pay enough attention or this hint was added later, but looks like i was hunting the rabbit hole. Correct path was to do OSINT.
 
 Scrolling  the page we can see some of the users listed. Let's add it to our note. Mightbe useful later.
 
-![[/images/initial3.png]]
+![](/images/initial3.png)
 
 so the next step was to do OSINT on these users.(Guessed it didn't know what to do)
 
@@ -33,7 +33,7 @@ so the next step was to do OSINT on these users.(Guessed it didn't know what to 
 I checked if i can find any social media accounts. I checked on facebook if i can find her account.
 Luckly i found. I even found the LInkedin profile of Thawang Shield Security, dexa singh ,Naval Maharjan(Thawang Intern) and Ojasini Shrees. It was useless so i am not mentioning it.
 
-![[/images/initial4.png]]
+![](images/initial4.png)
 
 
 She had updated her cover photo and her caption was a bit suspicious.
@@ -42,7 +42,7 @@ I always thought facebook removes your metadata, that's why i didn't bother too 
 Yeah, i downloaded the image and checked if i can find anything. I ran `exiftool`.
 Boom, got first flag.(What the heck facebook, why didn't you remove it?)
 
-![[/images/bugv_1.png]]
+![](images/bugv_1.png)
 
 Now we have got  the invite link for the discord server.
 
@@ -70,7 +70,7 @@ $get XO' OR 1=1 -- -
 
 
 
-![[/images/bugv_2.png]]
+![](images/bugv_2.png)
 
 
 
@@ -113,23 +113,23 @@ Output of nmap is self explanatory i guess.
 
 Lets head over to the web page and see what it has to offer.
 
-![[/images/gitlab.png]]
+![](images/gitlab.png)
 
 I quickly registered for the new user and logged in.
 
 If i remember correctly, there has been numerous CVE on gitlab. so it makes senese to check the gitlab version. I navigated to help page and we are presented with beautiful red warning.
 
-![[/images/warning.png]]
+![](images/warning.png)
 
 Quick google shows us that it is vulnerable for RCE. Even liveoverflow has made wonderful video explaining the issue. So i am going to grab the publlicly available exploit.
 
 I modified the exploit and replaced `nc` with `netcat`. I didn't have public ip so i used VPS.
 I quickly added my public key and logged in using ssh. You don't need VPS, you can use the ovpn file provided to you. Figured out it later.
 
-![[/images/gitlab_ssh.png]]
+![](images/gitlab_ssh.png)
 
 
-![[/images/bugv_3.png]]
+![](images/bugv_3.png)
 
 
 So we are finally in as `git` user. and we get out third flag. EZ PZ.
@@ -137,15 +137,15 @@ Looking at the home directory i found there was BugvCTf.apk. Same file was in th
 
 So i installed `jadx` on my system and opned the apk. I didn't bother to look at the entire code base,  instead after decompiling the apk ,i searched for the  string `bugvctf` in apk, and the 4th flag was found.
 
-![[/images/bugv_4.png]]
+![](images/bugv_4.png)
 
 So we have figured out the fourth flag.if we observe closely there is password for the user kakashi. I quickly checked if we have kakashi user in `/etc/passwd` . We do have user kakashi.
 
-![[/images/kakashi_user.png]]
+![](images/kakashi_user.png)
 
 so lets check if we can authenticate using this password.
 
-![[/images/kakashi.png]]
+![](images/kakashi.png)
 
 Successfullt authenticated.
 
@@ -154,23 +154,23 @@ Successfullt authenticated.
 Looking at the home directory we can see binary named `malicious`. It was given setuid permission. So it makes sense to look at it. I was really excited and i thought we might have to reverse malware. So lets grab the binary and check it on ghidra.
 Not a big fan of Ghidra. Sometimes looking at disassembly is easier than looking at decompiled code generated from ghidra. I personally love IDA decompiler. Sadly no enough money to buy IDA Pro(I mean it costs $1000. Piracy rocks though 😎).
 
-![[/images/ghidra.png]]
+![](images/ghidra.png)
 
 Binary is fairly simple and doesn't provide to much of functionality. However one thing drew my attention. Direct user input was being passed to printf and we know it results in format string vulnerability(No format string specifier was specified).
 
-![[/images/fmt.png]]
+![](images/fmt.png)
 
 Moreover there was another function named `binshell` which was never invoked and it would spawn a shell.
 
-![[/images/binshell.png]]
+![](images/binshell.png)
 
 so our goal is to somehow call the binshell function and get the shell. Before starting the exploitation process lets check what are the protection mechanism in the binary. Our friendly `checksec` tool allows us to do so. (I need to add checksec to my path)
 
-![[/images/checksec.png]]
+![](images/checksec.png)
 
 Since we have no PIE and Partial RERLO is enabled, our exploitation becomes easy. Because PIE is disabled all the functions in binary will have the same address. Partial RERLO puts the GOT entries before local variables and we can't overflow it. However in our case we have format string vulnerability which allows us to create strong primitives. `Arbitrary read` and `Arbitrary Write`. So our exploitation plan is to overwrite any of the GOT entry with the address of binshell.
 
-![[/images/got.png]]
+![](images/got.png)
 
 
 I am going to overwrite the `exit` GOT entry in my exploit.
@@ -181,7 +181,7 @@ Before moving further let's calculate the offset.
 
 lets throw bunch of `%p`.
 
-![[/images/format_offset.png]]
+![](images/format_offset.png)
 
 if we observer output carefully , we can see our input being reflected at position 4. So our offset is going to be 4.
 
@@ -221,7 +221,7 @@ print(FmtStr(execute_fmt=calculate_offset).offset)
 
 ```
 
-![[/images/offset_automate.png]]
+![](images/offset_automate.png)
 
 Code sometimes doesn't work.(It works, just gets hung sometimes). Running script couple of times fixs the problem.
 
@@ -274,7 +274,7 @@ p.interactive()
 
 My exploit was 100% reliable in my local machine however it failed couple of times on remote server. Running it couple of times spawns the root shell.
 
-![[/images/bugv_5.png]]
+![](images/bugv_5.png)
 
 Boom, now we are root got 5th flag and we are given what to hunt down next.
 
@@ -286,11 +286,11 @@ Lets continue our OSINT.....
 
 In early enumeration, we had discovered the facebook profile of `ojasini shrees`. There she had linked(I don't know if linked is going to be correct word) her twitter handle Too. So, lets headover to the twitter handle.
 
-![[/images/tweet.png]]
+![](images/tweet.png)
 
 This looks like hex. I grabbed and decoded it, and it produced gibberish output. It looked like some binary data, so i grabbed the first tweet and decoded to know what it was.
 
-![[/images/png_decode.png]]
+![](images/png_decode.png)
 
 So we can confirm its png image. So out next goal was to grab all those hex and decode it and get the image. There were more than 100 tweets so ,it makes no sense to grab all of them manually. So i signed up for twitter api and grabbed all the tweets at once. If you haven't used twitter api and have no idea what the heck it is,  you can always check the resource section.
 
@@ -321,7 +321,7 @@ curl -X GET -s -H 'Authorization: Bearer YOUR_AUTH_TOKEN' "https://api.twitter.c
 
 ```
 
-![[/images/tweet_all.png]]
+![](images/tweet_all.png)
 
 I filtered all the tweets, decoded the hex and the image was corrupted. After examining i found there were only 95 tweets. Some tweets were missing. We need all 109 tweets to get image.
 
@@ -333,7 +333,7 @@ So lets hit end point again providing the pagination token.
 curl -X GET -s -H 'Authorization: Bearer YOUR_AUTH_TOKEN' "https://api.twitter.com/2/users/1439870840212910080/tweets?max_results=100&pagination_token=YOUR_PAGINATION_TOKEN"
 ```
 
-![[/images/pagination.png]]
+![](images/pagination.png)
 
 
 so next step was to filter the tweets, decode the hex and send output to a file.
@@ -346,13 +346,13 @@ I know there is a better way to achieve this. You can do this in a btter way jus
 
 This oneliner saved my hours. Now we can view the image.
 
-![[/images/qrcode.png]]
+![](images/qrcode.png)
 
 It's QR Code. You can get its output easily. I am not going to leave my ultimate comfort zone(Yeah that black screen, Terminal), so i am going to install zbarimg(Google it if you don't know how to install zbarimg, this isn't going to be guide about installing zbarimg and  decoding QR codes).
 
 #### Zbarimg goes brrrrrr.
 
-![[/images/bugv_6.png]]
+![](images/bugv_6.png)
 
 Boom we got our sixth flag. Now we are given another IP.(Another headache and real pain in ass)
 
@@ -378,7 +378,7 @@ So we have found ssh is listening on PORT 2991. Seems a bit off.
 
 Before going any further let's check if it allows password authentication.
 
-![[/images/password_auth.png]]
+![](images/password_auth.png)
 No any public key , blah blah error instead prompts for password. So we are good to go. 
 
 but we have no credentials (SPOILER ALERT - WE HAVE). If we look at the repo we cloned earlier we have `traffic.pcapng` file. I didn't bother to load it on wireshark(Yeah i loaded at it and scrolled for hours), instead i used the `strings` to see if we can get any thing.
@@ -387,7 +387,7 @@ but we have no credentials (SPOILER ALERT - WE HAVE). If we look at the repo we 
 strings traffic.pcapng | grep -i bugv
 ```
 
-![[/images/bugv_7.png]]
+![](images/bugv_7.png)
 
 So we got our 7th flag and we have credentials too. Let's check if we can authenticate to our new host.
 
@@ -395,7 +395,7 @@ So we got our 7th flag and we have credentials too. Let's check if we can authen
 If you are thinking to revisit the CTF tasks looking at writeup, sorry bruh you are out of luck. Password has been changed. I was revisiting some of the tasks and i couldn't authenticate with same password (IT WAS DURING CTF HOURS). I was lucky during my time. I messaged organizer and asked them to check but, it wasn't fixed at all. Looks like organizers might have changed it or some players might have changed it (IF YOU ARE ONE OF THE GUY WHO THINKS BREAKING CTF INFRASTRUCTURE IS COOL AND PLANNING TO GIVE NEXT TALK ON BREAKING CTF INFRASTRUCTURE FOR FUN AND PROFIT THEN, FUCK YOU). I have even seen lots of player executing bash fork bomb to DoS the infrastructure. Please don't do it.
 
 
-![[/images/login.png]]
+![](images/login.png)
 
 Looking at the hostname i guessed this has to be somekind of docker escape. I checked if we were in some kind of docker. but we were not(No .dockerenv file bruh). In home directory of escapegod another hint is provided.
 
@@ -441,13 +441,13 @@ Moreover I found the docker.conf file. Looks like docker is running with high pr
 
 So i grabbed the `pspy64s` to see what processes were running.
 
-![[/images/pspy.png]]
+![](images/pspy.png)
 
 Docker is running, confirmed. Further exploring i found there were some iptables rule defined to reject all connections on these port.(Please refer screenshot.)
 
 Wait, Wait wait, these port number seems to be familiar. Remember the tweet of ojasini.
 
-![[/images/tweet_knock.png]]
+![](images/tweet_knock.png)
 
 I don't know why but its giving hint towards the port knocking. so let's see if we can see knockd conf.
 
@@ -495,11 +495,11 @@ Nmap done: 1 IP address (1 host up) scanned in 0.51 seconds
 
 Boom, let's see if we can authenticate using `escapegod:y0un33d23sc4p3` credentials.
 
-![[/images/final_login.png]]
+![](images/final_login.png)
 
 Looks like we are in container.
 
-![[/images/container_ssh.png]]
+![](images/container_ssh.png)
 
 yup we are. `.dockerenv` file confirms.
 
@@ -526,7 +526,7 @@ sh -c "echo \$\$ > /tmp/cgrp/x/cgroup.procs"
 
 I wiill be listening for reverse shell outside the container in shell of escapegod user. (escapegod user that we got earlier).
 
-![[/images/final_shell.png]]
+![](images/final_shell.png)
 
 We have finally got out 8th flag.
 
@@ -536,7 +536,7 @@ We have finally got out 8th flag.
 
 Final challenge was a bit cringe. Personal view, no offence. so task was to combine all the flags and decode it. `base64 -d` command didn't work for me(It did work but it was outputing invalid base64, so i though i might be doing it wrong). I was preety frustrated. There were enough hints directing it towards base64. `Lower your base`, `number 6`. It was enough. I thought it might be some other base encoding, could be base58 or anything. So i checked if there is any tool that auto detects and decodes for me. Quick google shows  `basecrack`.So i grabbed the `basecrack` tool.
 
-![[/images/base_crack.png]]
+![](images/base_crack.png)
 
 
 # FINAL WORDS
