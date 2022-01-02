@@ -135,7 +135,7 @@ I quickly added my public key and logged in using ssh. You don't need VPS, you c
 So we are finally in as `git` user. and we get out third flag. EZ PZ.
 Looking at the home directory i found there was BugvCTf.apk. Same file was in the repo that i cloned earlier. So i thought i had to do something with the apk itself.
 
-So i installed `jadx` on my system and opned the apk. I didn't bother to look at the entire code base,  instead after decompiling the apk ,i searched for the  string `bugvctf` in apk, and the 4th flag was found.
+So i installed `jadx` on my system and opened the apk. I didn't bother to look at the entire code base,  instead after decompiling the apk ,i searched for the  string `bugvctf` in apk, and the 4th flag was found.
 
 ![](images/bugv_4.png)
 
@@ -268,7 +268,6 @@ p.recvline()
 p.sendline(get_payload())
 
 p.interactive()
-
 ```
 
 
@@ -381,7 +380,7 @@ Before going any further let's check if it allows password authentication.
 ![](images/password_auth.png)
 No any public key , blah blah error instead prompts for password. So we are good to go. 
 
-but we have no credentials (SPOILER ALERT - WE HAVE). If we look at the repo we cloned earlier we have `traffic.pcapng` file. I didn't bother to load it on wireshark(Yeah i loaded at it and scrolled for hours), instead i used the `strings` to see if we can get any thing.
+but we have no credentials (SPOILER ALERT - WE HAVE). If we look at the repo we cloned earlier we have `traffic.pcapng` file. I didn't bother to load it on wireshark(Yeah i loaded it on wireshark and scrolled for hours), instead i used the `strings` to see if we can get any thing.
 
 ```bash
 strings traffic.pcapng | grep -i bugv
@@ -471,7 +470,7 @@ cat /etc/knockd.conf
         tcpflags    = syn
 ```
 
-So knocking on 1357,2468,13579 opens the port 21(it's SSH man, definitely its something), which is interesting for us.
+So knocking on 1357,2468,13579 opens the port 22(it's SSH man, definitely its something), which is interesting for us.
 
 so lets knock the port
 
