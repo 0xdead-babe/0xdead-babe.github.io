@@ -13,7 +13,7 @@ For a quick nudge or if you run into any confusion, feel free to reach out via D
 
 ### Prize:
 
-NPR 3000 for the first person to solve the challenge with description of how challenge was solved
+A generous reward of NPR 3000 awaits the first person who successfully conquers this challenge and provides a comprehensive description of their solution. Please note that this prize is exclusively reserved for Nepathya College students.
 
 **Challenge Ends on: 2023-10-09T15:15:00.000Z**
 
