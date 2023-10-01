@@ -9,7 +9,7 @@ By the way, on a lighter note, are you into PUBG matches? I'd love to play, but 
 
 *Challenge Author*: LaplaceDemon
 
-For a quick nudge or if you run into any confusion, feel free to reach out via Discord: **Apt32#3560**
+For any quick guidance, assistance in case of confusion, or when you're ready to submit your solution, don't hesitate to connect with via Discord: **Apt32#3560**
 
 ### Prize:
 
